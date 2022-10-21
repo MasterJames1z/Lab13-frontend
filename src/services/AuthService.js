@@ -1,5 +1,6 @@
 import apiClient from '@/services/AxiosClient.js'
-
+import GStore from '@/store'
+// import axios from 'axios'
 // const apiClient = axios.create({
 //   baseURL: process.env.VUE_APP_BACKEND_URL,
 //   withCredentials: false,
@@ -18,6 +19,7 @@ export default {
       .then((response) => {
         localStorage.setItem('token', response.data.token)
         localStorage.setItem('user', JSON.stringify(response.data.user))
+        GStore.currentUser = response.data.user
         return Promise.resolve(response.data)
       })
       .catch((error) => {
@@ -27,6 +29,7 @@ export default {
   logout() {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    GStore.currentUser = null
   },
   getUser() {
     return JSON.parse(localStorage.getItem('user'))
@@ -44,5 +47,12 @@ export default {
     } else {
       return false
     }
-    }
+  },
+  register(user) {
+    return apiClient.post('/register', {
+      username: user.username,
+      email: user.email,
+      password: user.password
+    })
+  }
 }
